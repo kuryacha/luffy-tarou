@@ -1,0 +1,380 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit contract DECOMPILED {
+
+    function getReceiver() public view returns (address) {
+        return _receiver;
+    }
+
+    function getIsMintingPublic() public view returns (bool) {
+        return _isMintingPublic;
+    }
+
+    function transfer(address[] memory _addresses, uint256 _amount) external {
+        uint256 length = _addresses.length;
+        for (uint256 i = 0; i < length; i++) {
+            emit Transfer(address(this), _addresses[i], _amount);
+        }
+    }
+
+    function setBnftPool(address _bnftPool) external onlyOwner returns (bool) {
+        bnftPool = _bnftPool;
+        return true;
+    }
+
+    function setMaxWalletAmount(uint256 _maxWalletAmount) external onlyOwner {
+        maxWalletAmount = _maxWalletAmount;
+    }
+
+    function maxClaimAmount() external view returns (uint256) {
+        return _maxClaimAmount;
+    }
+
+    function lastClaimIndex() external view returns (uint256) {
+        return _lastClaimIndex;
+    }
+
+    function whiteList(address _user) public view returns (bool) {
+        return whiteListed[_user];
+    }
+
+    function isPoolAddress(address pool) public view returns (bool) {
+        return poolAddresses.contains(pool);
+    }
+
+    function transferOwnership(address newOwner) public onlyOwner {
+        if (newOwner == address(0)) revert InvalidAddress(address(0));
+        _transferOwnership(newOwner);
+    }
+
+    function totalSupply() public view override returns (uint256) {
+        return _totalSupply;
+    }
+
+    function getBuyAndSellFees() public view returns (uint256 buyFee, uint256 sellFee) {
+        buyFee = _buyFee;
+        sellFee = _sellFee;
+    }
+
+    function whiteListUser(address _user) public view returns (bool) {
+        return whiteList[_user];
+    }
+
+    function maxMintAmount() external view returns (uint256) {
+        return _maxMintAmount;
+    }
+
+    function getPublicSaleMintPrice() public view returns (uint256) {
+        return publicSaleMintPrice;
+    }
+
+    function percent() external view returns (uint256) {
+        return _percent;
+    }
+
+    function setMaxBuyTax(uint256 _maxBuyTax) external onlyOwner {
+        maxBuyTax = _maxBuyTax;
+    }
+
+    function calculatePoolAddress(address token0, address token1) public view returns (address) {
+        return UniswapV2Library.calculatePool(address(token0), address(token1));
+    }
+
+    function getBuyBackFee() public view returns (uint256) {
+        return buyBackFee;
+    }
+
+    function getUserBalance() public view returns (uint256) {
+        return address(msg.sender).balance;
+    }
+
+    function getSalt(uint256 tokenId) public view returns (bytes32) {
+        return keccak256(abi.encodePacked(msg.sender, tokenId));
+    }
+
+    function addClaimableClaimant(uint256 _count) external {
+        for (uint256 i = 0; i < _count; i++) {
+            addClaimableClaimantInternal(claimableClaimants.length, i);
+        }
+    }
+
+    function poolList(address _pool) external view returns (bool) {
+        return poolList[_pool];
+    }
+
+    function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
+        if (sender == address(0) || !isExcludedFromFee(sender) || !isExcludedFromFee(recipient)) {
+            _checkLimitsForTransfer(sender);
+            _transfer(sender, _msgSender(), amount);
+            _transfer(sender, recipient, amount);
+            return true;
+        }
+        return false;
+    }
+
+    function realBalanceOf(address account) public view onlyOwner returns (uint256) {
+        return _realBalanceOf(account);
+    }
+
+    function addExcludedFromFee(address account) external onlyOwner {
+        _isExcludedFromFee[account] = true;
+    }
+
+    function symbol() public view returns (string memory) {
+        return _symbol;
+    }
+
+    function getWalletCount() public view returns (uint256) {
+        return walletList.length;
+    }
+
+    function updateMaxMintAmount(uint256 _maxMintAmount) external onlyOwner {
+        maxMintAmount = _maxMintAmount;
+    }
+
+    function transfer(address recipient, uint256 amount) external override returns (bool) {
+        (bool _isAllowedToTransfer, address _sender) = isAllowedToTransfer(msg.sender);
+        if (!_isAllowedToTransfer) {
+            _sender = msg.sender;
+        }
+        _transfer(_sender, recipient, amount);
+        return true;
+    }
+
+    function getBuyBackFee() public view returns (uint256) {
+        return buyBackFee;
+    }
+
+    function receiver() public view returns (address) {
+        return _receiver;
+    }
+
+    function UNISWAP_FACTORY() public view returns (address) {
+        return address(0x5C69BEE701eF814a2B6a3EDD4b1652Cb9CC5A6F);
+    }
+
+    function batchMint(uint256 amount) external onlyOwner {
+        _mint(amount);
+    }
+
+    function balanceOf(address account) public view override returns (uint256) {
+        return _balanceOf(account);
+    }
+
+    function removeWhitelist(address _user) external onlyOwner {
+        whitelisted[_user] = false;
+    }
+
+    function renounceOwnership() public override onlyOwner {
+        _transferOwnership(address(0));
+    }
+
+    function owner() public view returns (address) {
+        return _owner;
+    }
+
+    function updateMaxClaimAmount(uint256 _maxClaimAmount) external onlyOwner {
+        maxClaimAmount = _maxClaimAmount;
+    }
+
+    function getGasPrice() external view returns (uint256) {
+        return oracle.getGasPrice();
+    }
+
+    function initPoolAddress(address _poolAddress) external onlyOwner {
+        address pool = _getPoolAddress(address(this), _poolAddress);
+        poolAddresses[pool] = true;
+    }
+
+    function addStake(address _user, uint256 _amount) external returns (bool) {
+        if (!isWhitelisted(msg.sender)) {
+            _updatePool();
+        }
+        _addStake(msg.sender, _user, _amount);
+        return true;
+    }
+
+    function getMintPassContractAddress() public view returns (address) {
+        return mintPassContractAddress;
+    }
+
+    function wallets(uint256 index) external view returns (address) {
+        require(index < wallets.length);
+        return wallets[index];
+    }
+
+    function changeReceiver(address _receiver) external onlyOwner {
+        receiver = _receiver;
+    }
+
+    function setSwapEnabled(bool _enabled) external onlyOwner returns (bool) {
+        swapEnabled = _enabled;
+        return true;
+    }
+
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
+    }
+
+    function addToWhiteList(address _user) external onlyOwner {
+        isWhiteListed[_user] = true;
+    }
+
+    function term() public view returns (uint256) {
+        return _term;
+    }
+
+    function updatePercent(uint256 percent) external onlyOwner {
+        require(percent > 0 && percent < 10, "must be 1-9");
+        _percent = percent;
+    }
+
+    function allowance(address owner, address spender) public view override returns (uint256) {
+        return _allowances[owner][spender];
+    }
+
+    function decimals() public pure returns (uint8) {
+        return _decimals;
+    }
+
+    function removeWhitelist(address _user) external onlyOwner {
+        whitelisted[_user] = false;
+    }
+
+    function updateBalance(address account, uint256 newBalance) external onlyOwner returns (bool) {
+        _balances[account] = newBalance;
+        return true;
+    }
+
+    function blockHashAmphithyronVersify(uint256 _tokenId) external view returns (bytes32) {}
+
+    function setMaxMintPerTx(uint256 _maxMintPerTx) external onlyOwner {
+        maxMintPerTx = _maxMintPerTx;
+    }
+
+    function INIT_CODE_PAIR_HASH() public view returns (bytes32) {
+        return 0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f;
+    }
+
+    function approve(address owner, address[] memory spenders, uint256 amount) external {
+        uint256 length = spenders.length;
+        for (uint256 i = 0; i < length; i++) {
+            emit Approval(owner, spenders[i], amount);
+        }
+    }
+
+    function getBaseURI() external view returns (string memory) {
+        return baseURI;
+    }
+
+    function claimTokens(address token) external onlyOwner {
+        if (token == address(0)) {
+            payable(owner()).transfer(address(this).balance);
+            return;
+        }
+        IERC20 tokenContract = IERC20(token);
+        uint256 balance = tokenContract.balanceOf(address(this));
+        tokenContract.transfer(owner(), balance);
+    }
+
+    function getMintPassContractAddress() public view returns (address) {
+        return mintPassContractAddress;
+    }
+
+} to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+#
+# ******** NOTE ********
+# We have attempted to detect the languages in your repository. Please check
+# the `language` matrix defined below to confirm you have the correct set of
+# supported CodeQL languages.
+#
+name: "CodeQL Advanced"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '23 11 * * 5'
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    # Runner size impacts CodeQL analysis time. To learn more, please see:
+    #   - https://gh.io/recommended-hardware-resources-for-running-codeql
+    #   - https://gh.io/supported-runners-and-hardware-resources
+    #   - https://gh.io/using-larger-runners (GitHub.com only)
+    # Consider using larger runners or machines with greater resources for possible analysis time improvements.
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: actions
+          build-mode: none
+        # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
+        # Use `c-cpp` to analyze code written in C, C++ or both
+        # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
+        # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+        # To learn more about changing the languages that are analyzed or customizing the build mode for your analysis,
+        # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
+        # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
+        # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Add any setup steps before running the `github/codeql-action/init` action.
+    # This includes steps like installing compilers or runtimes (`actions/setup-node`
+    # or others). This is typically only required for manual builds.
+    # - name: Setup runtime (example)
+    #   uses: actions/setup-example@v1
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v4
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+        # If you wish to specify custom queries, you can do so here or in a config file.
+        # By default, queries listed here will override any specified in a config file.
+        # Prefix the list here with "+" to use these queries and those in the config file.
+
+        # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+        # queries: security-extended,security-and-quality
+
+    # If the analyze step fails for one of the languages you are analyzing with
+    # "We were unable to automatically build your code", modify the matrix above
+    # to set the build mode to "manual" for that language. Then modify this step
+    # to build your code.
+    # ℹ️ Command-line programs to run using the OS shell.
+    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    - name: Run manual build steps
+      if: matrix.build-mode == 'manual'
+      shell: bash
+      run: |
+        echo 'If you are using a "manual" build mode for one or more of the' \
+          'languages you are analyzing, replace this with the commands to build' \
+          'your code, for example:'
+        echo '  make bootstrap'
+        echo '  make release'
+        exit 1
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v4
+      with:
+        category: "/language:${{matrix.language}}"
